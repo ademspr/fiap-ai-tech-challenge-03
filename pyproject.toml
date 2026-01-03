@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "fiap-medical-assistant"
+version = "0.1.0"
+description = "Medical Assistant using fine-tuned Llama model"
+authors = [
+    "Ademir Pereira <ademirspr@live.com>",
+    "Gabriel Santos <gabriel@ogabrielsantos.com.br>",
+    "Mauricio Rodrigues <momorodrigues1@gmail.com>"
+]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "~3.10"
+streamlit = "1.50.0"
+langchain = "0.3.27"
+langchain-core = "0.3.76"
+langchain-ollama = "0.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
