@@ -1,70 +1,27 @@
 FROM ./outputs/model.gguf
 
-TEMPLATE """{{- if .Messages }}
-{{- if or .System .Tools }}<|im_start|>system
-{{- if .System }}
-{{ .System }}
-{{- end }}
-{{- if .Tools }}
+TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|}
 
-# Tools
+{{ .System }}<|eot_id|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
 
-You may call one or more functions to assist with the user query.
+{{ .Prompt }}<|eot_id|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
 
-You are provided with function signatures within <tools></tools> XML tags:
-<tools>
-{{- range .Tools }}
-{"type": "function", "function": {{ .Function }}}
-{{- end }}
-</tools>
+{{ .Response }}<|eot_id|>"""
 
-For each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:
-<tool_call>
-{"name": <function-name>, "arguments": <args-json-object>}
-</tool_call>
-{{- end }}<|im_end|>
-{{ end }}
-{{- range $i, $_ := .Messages }}
-{{- $last := eq (len (slice $.Messages $i)) 1 -}}
-{{- if eq .Role "user" }}<|im_start|>user
-{{ .Content }}<|im_end|>
-{{ else if eq .Role "assistant" }}<|im_start|>assistant
-{{ if .Content }}{{ .Content }}
-{{- else if .ToolCalls }}<tool_call>
-{{ range .ToolCalls }}{"name": "{{ .Function.Name }}", "arguments": {{ .Function.Arguments }}}
-{{ end }}</tool_call>
-{{- end }}{{ if not $last }}<|im_end|>
-{{ end }}
-{{- else if eq .Role "tool" }}<|im_start|>user
-<tool_response>
-{{ .Content }}
-</tool_response><|im_end|>
-{{ end }}
-{{- if and (ne .Role "assistant") $last }}<|im_start|>assistant
-{{ end }}
-{{- end }}
-{{- else }}
-{{- if .System }}<|im_start|>system
-{{ .System }}<|im_end|>
-{{ end }}{{ if .Prompt }}<|im_start|>user
-{{ .Prompt }}<|im_end|>
-{{ end }}<|im_start|>assistant
-{{ end }}{{ .Response }}{{ if .Response }}<|im_end|>{{ end }}"""
+SYSTEM """You are an AI medical information assistant.
 
-SYSTEM """You are a concise medical assistant.
+STRICT RULES:
+1. Answer in 2-4 short sentences maximum. Be direct.
+2. NEVER diagnose conditions or prescribe/recommend medications.
+3. NEVER invent disease names, drug names, or mix medical information.
+4. NEVER mention institution names, signatures, or introduce yourself.
+5. NEVER include statistics, study results, or academic citations.
+6. If asked about treatment, say "Consult a healthcare professional."
 
-CRITICAL RULES - FOLLOW EXACTLY:
-- Maximum 2-3 sentences. NO EXCEPTIONS.
-- NO academic language. NO "studies show", "research indicates".
-- NO lists. NO bullet points. NO multiple paragraphs.
-- If answer needs more than 3 sentences, give only the most important point.
-- NEVER start with "I" or introduce yourself.
-- STOP writing after 3 sentences.
-- NEVER diagnose or prescribe medications.
+If unsure, say "I don't have reliable information on this topic. Please consult a healthcare professional.\""""
 
-If unsure: "I don't have reliable information. Please consult a healthcare professional."
-"""
-
-PARAMETER temperature 0.1
+PARAMETER temperature 0.3
 PARAMETER top_p 0.85
-PARAMETER repeat_penalty 1.8
+PARAMETER repeat_penalty 1.2
+PARAMETER stop "<|eot_id|>"
+PARAMETER stop "<|end_of_text|>"
