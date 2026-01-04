@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: medical-assistant-db
+    environment:
+      POSTGRES_USER: medical
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: medical_assistant
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init_scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - medical-net
+    restart: unless-stopped
+
+  chatbot:
+    build:
+      context: .
+    container_name: medical-assistant
+    command: ".venv/bin/python -m streamlit run main.py --server.port=8501 --server.address=0.0.0.0"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: medical
+      DB_PASSWORD: password123
+      DB_NAME: medical_assistant
+      OLLAMA_HOST: host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - medical-net
+    restart: unless-stopped
+
+volumes:
+  db_data:
+
+networks:
+  medical-net:
+    driver: bridge
