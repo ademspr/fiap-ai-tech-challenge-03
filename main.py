@@ -13,7 +13,8 @@ from repositories import MedicationRepository, PatientRepository
 
 load_dotenv()
 
-MODEL_NAME = "fiap-3"
+MODEL_BASE = "llama3.2:3b"
+MODEL_TUNED = "fiap-3"
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
@@ -64,16 +65,20 @@ def identify_patient(cpf: str) -> bool:
         return False
 
     st.session_state.identified_patient = identified
-    st.session_state.chatbot.set_patient_context(identified.context)
-    st.session_state.chatbot.clear_history()
+    st.session_state.chatbot_base.set_patient_context(identified.context)
+    st.session_state.chatbot_base.clear_history()
+    st.session_state.chatbot_tuned.set_patient_context(identified.context)
+    st.session_state.chatbot_tuned.clear_history()
 
     return True
 
 
 def clear_patient():
     st.session_state.identified_patient = None
-    st.session_state.chatbot.set_patient_context("")
-    st.session_state.chatbot.clear_history()
+    st.session_state.chatbot_base.set_patient_context("")
+    st.session_state.chatbot_base.clear_history()
+    st.session_state.chatbot_tuned.set_patient_context("")
+    st.session_state.chatbot_tuned.clear_history()
     st.session_state.messages = []
 
 
@@ -85,15 +90,21 @@ if __name__ == "__main__":
     )
 
     st.title("🏥 Medical Assistant")
-    st.caption("Fine-tuned Llama 3.2 3B")
+    st.caption("Comparison: Llama 3.2 3B (Base) vs Fine-tuned")
 
-    if "chatbot" not in st.session_state:
-        model = ChatOllama(
-            model=MODEL_NAME,
+    if "chatbot_base" not in st.session_state:
+        model_base = ChatOllama(
+            model=MODEL_BASE,
             temperature=0.3,
             base_url=f"http://{OLLAMA_HOST}:11434",
         )
-        st.session_state.chatbot = ChatBot(llm=model)
+        model_tuned = ChatOllama(
+            model=MODEL_TUNED,
+            temperature=0.3,
+            base_url=f"http://{OLLAMA_HOST}:11434",
+        )
+        st.session_state.chatbot_base = ChatBot(llm=model_base)
+        st.session_state.chatbot_tuned = ChatBot(llm=model_tuned)
         st.session_state.identified_patient = None
 
     with st.sidebar:
@@ -142,22 +153,53 @@ if __name__ == "__main__":
                 "Please identify yourself using your CPF in the sidebar "
                 "so I can access your medical records and provide personalized assistance."
             )
+
         st.session_state.messages.append(
             {"role": "assistant", "content": welcome_message}
         )
 
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        if message["role"] == "user":
+            with st.chat_message("user"):
+                st.markdown(message["content"])
+        elif "base" in message and "tuned" in message:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("**🔵 Base Model (Llama 3.2 3B)**")
+                with st.chat_message("assistant"):
+                    st.markdown(message["base"])
+
+            with col2:
+                st.markdown("**🟢 Fine-tuned Model**")
+                with st.chat_message("assistant"):
+                    st.markdown(message["tuned"])
+        else:
+            with st.chat_message("assistant"):
+                st.markdown(message["content"])
 
     if prompt := st.chat_input("Ask a medical question..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        with st.spinner("Thinking..."):
-            response = st.session_state.chatbot.ask(prompt)
-            with st.chat_message("assistant"):
-                st.markdown(response)
+        col1, col2 = st.columns(2)
 
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        with st.spinner("Querying models..."):
+            response_base = st.session_state.chatbot_base.ask(prompt)
+            response_tuned = st.session_state.chatbot_tuned.ask(prompt)
+
+        with col1:
+            st.markdown("**🔵 Base Model (Llama 3.2 3B)**")
+            with st.chat_message("assistant"):
+                st.markdown(response_base)
+        with col2:
+            st.markdown("**🟢 Fine-tuned Model**")
+            with st.chat_message("assistant"):
+                st.markdown(response_tuned)
+
+        st.session_state.messages.append({
+            "role": "assistant",
+            "base": response_base,
+            "tuned": response_tuned
+        })
