@@ -35,25 +35,25 @@ INSERT INTO patients (cpf, name, birth_date, phone, email) VALUES
 
 -- Test data: Medications
 INSERT INTO medications (patient_id, name, dosage, frequency, start_date, end_date, notes) VALUES
--- Maria Silva (diabetes e hipertensão)
-(1, 'Metformina', '850mg', '2x ao dia', '2023-01-15', NULL, 'Tomar após refeições'),
-(1, 'Losartana', '50mg', '1x ao dia', '2023-01-15', NULL, 'Tomar pela manhã'),
+-- Maria Silva (diabetes and hypertension)
+(1, 'Metformin', '850mg', 'Twice daily', '2023-01-15', NULL, 'Take after meals'),
+(1, 'Losartan', '50mg', 'Once daily', '2023-01-15', NULL, 'Take in the morning'),
 
--- João Santos (hipertensão e colesterol)
-(2, 'Atenolol', '25mg', '1x ao dia', '2022-06-10', NULL, 'Tomar pela manhã em jejum'),
-(2, 'Sinvastatina', '20mg', '1x ao dia', '2022-06-10', NULL, 'Tomar à noite'),
-(2, 'AAS', '100mg', '1x ao dia', '2022-06-10', NULL, 'Tomar após almoço'),
+-- João Santos (hypertension and cholesterol)
+(2, 'Atenolol', '25mg', 'Once daily', '2022-06-10', NULL, 'Take in the morning on empty stomach'),
+(2, 'Simvastatin', '20mg', 'Once daily', '2022-06-10', NULL, 'Take at night'),
+(2, 'Aspirin', '100mg', 'Once daily', '2022-06-10', NULL, 'Take after lunch'),
 
--- Ana Oliveira (ansiedade)
-(3, 'Escitalopram', '10mg', '1x ao dia', '2024-02-01', NULL, 'Tomar pela manhã'),
-(3, 'Clonazepam', '0.5mg', 'Se necessário', '2024-02-01', '2024-05-01', 'Máximo 1x ao dia para crises'),
+-- Ana Oliveira (anxiety)
+(3, 'Escitalopram', '10mg', 'Once daily', '2024-02-01', NULL, 'Take in the morning'),
+(3, 'Clonazepam', '0.5mg', 'As needed', '2024-02-01', '2024-05-01', 'Maximum once daily for anxiety episodes'),
 
--- Carlos Ferreira (diabetes, hipertensão, tireoide)
-(4, 'Insulina NPH', '20UI', '2x ao dia', '2020-03-20', NULL, 'Aplicar subcutâneo antes do café e jantar'),
-(4, 'Insulina Regular', '10UI', '3x ao dia', '2020-03-20', NULL, 'Aplicar antes das refeições principais'),
-(4, 'Enalapril', '10mg', '2x ao dia', '2020-03-20', NULL, 'Tomar 12/12h'),
-(4, 'Levotiroxina', '50mcg', '1x ao dia', '2019-08-15', NULL, 'Tomar em jejum, 30min antes do café'),
+-- Carlos Ferreira (diabetes, hypertension, thyroid)
+(4, 'NPH Insulin', '20UI', 'Twice daily', '2020-03-20', NULL, 'Inject subcutaneously before breakfast and dinner'),
+(4, 'Regular Insulin', '10UI', 'Three times daily', '2020-03-20', NULL, 'Inject before main meals'),
+(4, 'Enalapril', '10mg', 'Twice daily', '2020-03-20', NULL, 'Take every 12 hours'),
+(4, 'Levothyroxine', '50mcg', 'Once daily', '2019-08-15', NULL, 'Take on empty stomach, 30min before breakfast'),
 
--- Beatriz Costa (enxaqueca)
-(5, 'Topiramato', '25mg', '2x ao dia', '2024-06-01', NULL, 'Prevenção de enxaqueca'),
-(5, 'Sumatriptana', '50mg', 'Se necessário', '2024-06-01', NULL, 'Tomar no início da crise, máximo 2x ao dia');
+-- Beatriz Costa (migraine)
+(5, 'Topiramate', '25mg', 'Twice daily', '2024-06-01', NULL, 'Migraine prevention'),
+(5, 'Sumatriptan', '50mg', 'As needed', '2024-06-01', NULL, 'Take at onset of migraine, maximum twice daily');
