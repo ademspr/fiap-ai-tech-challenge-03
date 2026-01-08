@@ -15,7 +15,9 @@ class ChatResponse:
 
 
 class ChatBot:
-    def __init__(self, llm: ChatOllama, patient_context: str = "", use_rag: bool = False):
+    def __init__(
+        self, llm: ChatOllama, patient_context: str = "", use_rag: bool = False
+    ):
         self.llm = llm
         self.patient_context = patient_context
         self.use_rag = use_rag
@@ -45,7 +47,7 @@ class ChatBot:
         5. If asked about treatment, say "Consult a healthcare professional."
 
         If unsure, say "I don't have reliable information on this topic. Please consult a healthcare professional."
-        """
+        """  # noqa: E501
 
         return ChatPromptTemplate.from_messages(
             [

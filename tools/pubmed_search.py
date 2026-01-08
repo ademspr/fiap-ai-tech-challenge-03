@@ -31,21 +31,27 @@ class PubMedSearcher:
 
     def search(self, query: str, top_k: int = 2) -> list[PubMedSource]:
         query_embedding = self._model.encode([query])[0].tolist()
-        results = self._collection.query(query_embeddings=[query_embedding], n_results=top_k)
+        results = self._collection.query(
+            query_embeddings=[query_embedding], n_results=top_k
+        )
 
         sources = []
         for metadata in results.get("metadatas", [[]])[0]:
             if metadata is None:
                 continue
 
-            sources.append(PubMedSource(
-                pmid=metadata.get("pmid", ""),
-                question=metadata.get("question", ""),
-                contexts=metadata.get("contexts", "").split("|||"),
-                labels=metadata.get("labels", "").split(","),
-                year=metadata.get("year", "N/A"),
-                meshes=metadata.get("meshes", "").split(",") if metadata.get("meshes") else [],
-            ))
+            sources.append(
+                PubMedSource(
+                    pmid=metadata.get("pmid", ""),
+                    question=metadata.get("question", ""),
+                    contexts=metadata.get("contexts", "").split("|||"),
+                    labels=metadata.get("labels", "").split(","),
+                    year=metadata.get("year", "N/A"),
+                    meshes=metadata.get("meshes", "").split(",")
+                    if metadata.get("meshes")
+                    else [],
+                )
+            )
 
         return sources
 
