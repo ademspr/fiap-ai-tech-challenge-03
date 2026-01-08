@@ -82,7 +82,7 @@ def clear_patient():
     st.session_state.messages = []
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # noqa: C901
     st.set_page_config(
         page_title="FIAP Fase 03 - Medical Assistant", page_icon="🏥", layout="wide"
     )
