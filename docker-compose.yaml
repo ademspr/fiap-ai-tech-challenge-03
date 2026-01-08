@@ -33,6 +33,9 @@ services:
       DB_PASSWORD: password123
       DB_NAME: medical_assistant
       OLLAMA_HOST: host.docker.internal
+      ANONYMIZED_TELEMETRY: "False"
+    volumes:
+      - ./data/chroma_db:/app/data/chroma_db
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

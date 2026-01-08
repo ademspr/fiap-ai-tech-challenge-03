@@ -103,8 +103,8 @@ if __name__ == "__main__":
             temperature=0.3,
             base_url=f"http://{OLLAMA_HOST}:11434",
         )
-        st.session_state.chatbot_base = ChatBot(llm=model_base)
-        st.session_state.chatbot_tuned = ChatBot(llm=model_tuned)
+        st.session_state.chatbot_base = ChatBot(llm=model_base, use_rag=False)
+        st.session_state.chatbot_tuned = ChatBot(llm=model_tuned, use_rag=True)
         st.session_state.identified_patient = None
 
     with st.sidebar:
@@ -174,6 +174,20 @@ if __name__ == "__main__":
                 st.markdown("**🟢 Fine-tuned Model**")
                 with st.chat_message("assistant"):
                     st.markdown(message["tuned"])
+
+                if message.get("sources"):
+                    sources = message["sources"]
+                    total_sources = len(sources)
+
+                    with st.expander("📚 Sources (PubMedQA Dataset)"):
+                        for i, source in enumerate(sources):
+                            st.markdown(f"**PMID {source['pmid']}** ({source['year']})")
+                            st.markdown(f"*Related question:* {source['question']}")
+                            if source["meshes"]:
+                                st.markdown(f"*Topics:* {', '.join(source['meshes'][:5])}")
+
+                            if i < total_sources - 1:
+                                st.divider()
         else:
             with st.chat_message("assistant"):
                 st.markdown(message["content"])
@@ -192,14 +206,32 @@ if __name__ == "__main__":
         with col1:
             st.markdown("**🔵 Base Model (Llama 3.2 3B)**")
             with st.chat_message("assistant"):
-                st.markdown(response_base)
+                st.markdown(response_base.content)
         with col2:
             st.markdown("**🟢 Fine-tuned Model**")
             with st.chat_message("assistant"):
-                st.markdown(response_tuned)
+                st.markdown(response_tuned.content)
+
+            if response_tuned.sources:
+                with st.expander("📚 Sources (PubMedQA Dataset)"):
+                    sources = response_tuned.sources
+                    total_sources = len(sources)
+
+                    for i, source in enumerate(sources):
+                        st.markdown(f"**PMID {source.pmid}** ({source.year})")
+                        st.markdown(f"*Related question:* {source.question}")
+                        if source.meshes:
+                            st.markdown(f"*Topics:* {', '.join(source.meshes[:5])}")
+
+                        if i < total_sources - 1:
+                            st.divider()
 
         st.session_state.messages.append({
             "role": "assistant",
-            "base": response_base,
-            "tuned": response_tuned
+            "base": response_base.content,
+            "tuned": response_tuned.content,
+            "sources": [
+                {"pmid": s.pmid, "year": s.year, "question": s.question, "meshes": s.meshes}
+                for s in response_tuned.sources
+            ]
         })
