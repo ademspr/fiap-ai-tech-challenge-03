@@ -2,10 +2,10 @@ import os
 import re
 
 import psycopg2
-from psycopg2.extras import RealDictCursor
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
+from psycopg2.extras import RealDictCursor
 
 from chatbot.chatbot import ChatBot
 from model import IdentifiedPatient
@@ -84,9 +84,7 @@ def clear_patient():
 
 if __name__ == "__main__":
     st.set_page_config(
-        page_title="FIAP Fase 03 - Medical Assistant",
-        page_icon="🏥",
-        layout="wide"
+        page_title="FIAP Fase 03 - Medical Assistant", page_icon="🏥", layout="wide"
     )
 
     st.title("🏥 Medical Assistant")
@@ -121,7 +119,7 @@ if __name__ == "__main__":
             cpf_input = st.text_input(
                 "Enter your CPF",
                 placeholder="000.000.000-00",
-                help="Enter your CPF to access your medical records"
+                help="Enter your CPF to access your medical records",
             )
 
             if st.button("Identify"):
@@ -184,7 +182,9 @@ if __name__ == "__main__":
                             st.markdown(f"**PMID {source['pmid']}** ({source['year']})")
                             st.markdown(f"*Related question:* {source['question']}")
                             if source["meshes"]:
-                                st.markdown(f"*Topics:* {', '.join(source['meshes'][:5])}")
+                                st.markdown(
+                                    f"*Topics:* {', '.join(source['meshes'][:5])}"
+                                )
 
                             if i < total_sources - 1:
                                 st.divider()
@@ -226,12 +226,19 @@ if __name__ == "__main__":
                         if i < total_sources - 1:
                             st.divider()
 
-        st.session_state.messages.append({
-            "role": "assistant",
-            "base": response_base.content,
-            "tuned": response_tuned.content,
-            "sources": [
-                {"pmid": s.pmid, "year": s.year, "question": s.question, "meshes": s.meshes}
-                for s in response_tuned.sources
-            ]
-        })
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "base": response_base.content,
+                "tuned": response_tuned.content,
+                "sources": [
+                    {
+                        "pmid": s.pmid,
+                        "year": s.year,
+                        "question": s.question,
+                        "meshes": s.meshes,
+                    }
+                    for s in response_tuned.sources
+                ],
+            }
+        )

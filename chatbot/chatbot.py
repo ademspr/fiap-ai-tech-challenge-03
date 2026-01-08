@@ -15,7 +15,9 @@ class ChatResponse:
 
 
 class ChatBot:
-    def __init__(self, llm: ChatOllama, patient_context: str = "", use_rag: bool = False):
+    def __init__(
+        self, llm: ChatOllama, patient_context: str = "", use_rag: bool = False
+    ):
         self.llm = llm
         self.patient_context = patient_context
         self.use_rag = use_rag
