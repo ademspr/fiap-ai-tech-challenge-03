@@ -149,7 +149,7 @@ if __name__ == "__main__":
             welcome_message = (
                 "Hello! I'm your medical assistant. "
                 "Please identify yourself using your CPF in the sidebar "
-                "so I can access your medical records and provide personalized assistance."
+                "so I can access your medical records and provide personalized assistance."  # noqa: E501
             )
 
         st.session_state.messages.append(

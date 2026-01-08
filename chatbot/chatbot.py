@@ -47,7 +47,7 @@ class ChatBot:
         5. If asked about treatment, say "Consult a healthcare professional."
 
         If unsure, say "I don't have reliable information on this topic. Please consult a healthcare professional."
-        """
+        """  # noqa: E501
 
         return ChatPromptTemplate.from_messages(
             [
