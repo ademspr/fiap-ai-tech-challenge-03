@@ -3,6 +3,16 @@ from datetime import date, datetime
 
 
 @dataclass
+class PubMedSource:
+    pmid: str
+    question: str
+    contexts: list[str]
+    labels: list[str]
+    year: str
+    meshes: list[str]
+
+
+@dataclass
 class Patient:
     id: int
     cpf: str
