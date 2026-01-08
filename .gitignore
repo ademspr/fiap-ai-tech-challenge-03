@@ -1,2 +1,23 @@
-.env
-data
+# python related
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.mypy_cache/
+.venv/
+
+# ide
+.idea/
+.cursor/
+.vscode/
+
+# model related
+data/
+outputs/
+
+# git
+.git/
+
+# misc
+*.log
+.DS_Store
